@@ -13,32 +13,32 @@
 
 class CGameBoard {
 private:
-    long length;
-    long height;
+    int length;
+    int height;
     std::vector< CTorus > threeToruses;
     int now;
 public:
-    CGameBoard(long len, long heig);
+    CGameBoard(int len, int heig);
 
     void changeMode();
 
-    void countCell( long index);
+    void countCell( int index);
 
     void printTorus();
 
-    long getHeight();
+    int getHeight();
 
-    long getLength();
+    int getLength();
 
     ~CGameBoard();
 
     void setNewNow(std::vector<int>& input);
 
-    bool isCounted(long index);
+    bool isCounted(int index);
 
-    int getCell(long index);
+    int getCell(int index);
 
-    long getSize();
+    int getSize();
 
     void printNextTorus();
 

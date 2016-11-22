@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 2.6.4)
 project(MPI)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c99")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c98")
 
 set(SOURCE_FILES main.cpp  CGameBoard.cpp CTorus.cpp )
 

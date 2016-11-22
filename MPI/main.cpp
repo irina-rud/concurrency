@@ -14,9 +14,9 @@
 int main(int argc, char** argv){
     std::ifstream F("input.txt");
 
-    long iterations;
-    long higth;
-    long length;
+    int iterations;
+    int higth;
+    int length;
 
     int MESSAGE = 101;
 
@@ -50,27 +50,27 @@ int main(int argc, char** argv){
     }
 
 
-    long rank;
-    long size;
+    int rank;
+    int size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    long bounds[2];
+    int bounds[2];
     if (higth % size < rank){
-        bounds[0] = higth % size + rank*long(higth/size)+1;
-        bounds[1] =  higth % size + (rank + 1)*long(higth/size) ;
+        bounds[0] = higth % size + rank*int(higth/size)+1;
+        bounds[1] =  higth % size + (rank + 1)*int(higth/size) ;
     }else{
-        bounds[0] = long(higth/size) * rank + rank;
-        bounds[1] =  long(higth/size) * (rank + 1) + rank;
+        bounds[0] = int(higth/size) * rank + rank;
+        bounds[1] =  int(higth/size) * (rank + 1) + rank;
     }
 
 
-    long localHigth = bounds[1] - bounds[0] + 3;
+    int localHigth = bounds[1] - bounds[0] + 3;
     CGameBoard board(length,localHigth);
 
     std::vector<int> localTorus;
     localTorus.resize(localHigth*length);
-    long pr = (bounds[0] + higth - 1) % higth;
+    int pr = (bounds[0] + higth - 1) % higth;
     for (int j = 0; j < length; ++j){
         localTorus.push_back(torus[pr*length + j]);
     }
@@ -79,12 +79,12 @@ int main(int argc, char** argv){
             localTorus.push_back(torus[i*length + j]);
         }
     }
-    long ls = (bounds[1] + 1) % higth;
+    int ls = (bounds[1] + 1) % higth;
     for (int j = 0; j < length; ++j){
         localTorus.push_back(torus[ls*length + j]);
     }
     board.setNewNow(localTorus);
-    long thorusSize = length * localHigth;
+    int thorusSize = length * localHigth;
 
     std::vector<int> intUpperBound;
     std::vector<int> intLowerBound;
@@ -97,8 +97,8 @@ int main(int argc, char** argv){
     myLowerBound.resize(length);
 
 
-    for (long i = 0; i < iterations; ++i){
-        for (long j = length; j < thorusSize - 2* length; ++j){
+    for (int i = 0; i < iterations; ++i){
+        for (int j = length; j < thorusSize - 2* length; ++j){
             board.countCell(j);
         }
         myLowerBound = board.lowerBound();
@@ -114,7 +114,7 @@ int main(int argc, char** argv){
 
                      &intLowerBound[0], length, MPI_INT,(rank+1)%size, TagUpper,
 
-                     MPI_COMM_WORLD, &MESSAGE);
+                     MPI_COMM_WORLD, &status);
         board.setLowerBound(intLowerBound);
         board.setUpperBound(intUpperBound);
 
@@ -123,29 +123,29 @@ int main(int argc, char** argv){
     if (rank == 0){
         std::vector<int> resTorus;
         std::vector<int> partTorus;
-        partTorus.resize((long(higth/size) + 1)*length);
+        partTorus.resize((int(higth/size) + 1)*length);
         partTorus = board.getTorus();
-        for (long j = length; j < (localHigth - 1) * length; ++j){
+        for (int j = length; j < (localHigth - 1) * length; ++j){
             resTorus.push_back(partTorus[j]);
         }
 
         torus.resize(length*higth);
-        long localBounds[2];
+        int localBounds[2];
 
-        long localH;
+        int localH;
 
-        for (long i = 1; i < size; ++i){
+        for (int i = 1; i < size; ++i){
             if (higth % size < i){
-                localBounds[0] = higth % size + i*long(higth/size)+1;
-                localBounds[1] =  higth % size + (i + 1)*long(higth/size) ;
+                localBounds[0] = higth % size + i*int(higth/size)+1;
+                localBounds[1] =  higth % size + (i + 1)*int(higth/size) ;
             }else{
-                localBounds[0] = long(higth/size) * i + i;
-                localBounds[1] =  long(higth/size) * (i + 1) + i;
+                localBounds[0] = int(higth/size) * i + i;
+                localBounds[1] =  int(higth/size) * (i + 1) + i;
             }
             localH = localBounds[1] - localBounds[0] + 1;
-            MPI_Recv(&partTorus[0], localH * length, i, TagPart);
+            MPI_Recv(&partTorus[0], localH * length, MPI_INT, i, TagPart, MPI_COMM_WORLD, &status);
 
-            for (long j = 0; j < localH * length; ++j){
+            for (int j = 0; j < localH * length; ++j){
                 resTorus.push_back(partTorus[j]);
             }
         }
@@ -158,10 +158,10 @@ int main(int argc, char** argv){
         partTorus.resize(localHigth * length);
         partTorus = board.getTorus();
         std::vector<int> toSendTorus;
-        for (long j = length; j < (localHigth - 1) * length; ++j){
+        for (int j = length; j < (localHigth - 1) * length; ++j){
             toSendTorus.push_back(partTorus[j]);
         }
-        MPI_Send(&toSendTorus[0],localHigth * length, 0, TagPart );
+        MPI_Send(&toSendTorus[0],localHigth * length,MPI_INT, 0, TagPart, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <vector>
+#include <omp.h>
 #include "CGameBoard.h"
 #include "CTorus.h"
 
@@ -37,33 +38,43 @@ int main(){
     F.close();
 
 
-
-    int nthreads, tid;
-
     CGameBoard board(length,higth);
     board.setNewNow(torus);
-    long size = length * higth;
+    CGameBoard* board_link = & board;
+    long all_size = length * higth;
+    long size = length * higth / (kernels);
+    long rest = length * higth - size*kernels;
 
-    #pragma omp parallel num_threads(kernels)
-    #pragma omp parallel private(nthreads, tid)
-    for (long i = 0; i < iterations; ++i){
-        #pragma omp for
-        for (long j = 0; j < size; ++j){
-            board.countCell(j);
-        }
-        if (tid == 0)
+    //std::cout << size<< " - " <<rest <<std::endl;
+    for (int j = 0; j < iterations; ++j) {
+        //std::cout<< " It's iteration "<< j <<std::endl;
+        #pragma omp parallel num_threads(kernels)
         {
-            board.changeMode();
+            size_t start;
+            int name = omp_get_thread_num();
+            if (name < rest) {
+                start = (size_t) ((size + 1) * name);
+                //std::cout << name <<" start " << start << std::endl;
+            } else {
+                start = (size_t) (size * name + rest);
+                //std::cout << name <<" start " << start << std::endl;
+            }
+            for (int i = 0; !(board_link->isCounted(start + i)); ++i) {
+                    //std::cout << "my name:" << name << " I'm going right "<< i <<std::endl;
+                board_link->countCell(start + i);
+            }
+//            board.printPrevTorus();
+//            board.printTorus();
+//            board.printNextTorus();
+            for (int i = -1; !(board_link->isCounted(start + i)); --i) {
+                    //std::cout << "my name:" << name << " I'm going left "<< i <<std::endl;
+                board_link->countCell(start + i);
+            }
+            //std::cout << "my name:" << name << " I've done " <<std::endl;
         }
-
-        #pragma omp barrier
-
+        board_link->changeMode();
+        //std::cout << " not parallel " <<std::endl;
     }
-
-    board.printPrevTorus();
-
-//    #pragma omp parallel num_threads(10)
-//        #pragma omp for
-//            for(int n=0; n<100; ++n) printf(" %d", n);
+    board_link->printPrevTorus();
 
 }

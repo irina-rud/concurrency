@@ -5,7 +5,7 @@
 #include "CTorus.h"
 
 
-CTorus::CTorus(long len, long heig):length(len), height(heig){
+CTorus::CTorus(int len, int heig):length(len), height(heig){
     torus.resize(length*height,  notchanged);
 }
 
@@ -13,11 +13,11 @@ void CTorus::set(std::vector<int>& input){
     torus = input;
 }
 
-long CTorus::getHeight(){
+int CTorus::getHeight(){
     return height;
 }
 
-long CTorus::getLength(){
+int CTorus::getLength(){
     return length;
 }
 
@@ -68,7 +68,7 @@ std::vector<int> CTorus::lowerBound(){
 }
 
 
-int CTorus::isLiving(long x, long y){
+int CTorus::isLiving(int x, int y){
     if (x < 0){
         x = (x + length) % length;
     } else{
@@ -82,20 +82,20 @@ int CTorus::isLiving(long x, long y){
     return torus[y * length + x];
 }
 
-int CTorus::numOfNeighbours(long x, long y){
-    std::vector< std::vector< int > > steps= {{-1, -1}, {0, -1}, {1, -1},
-                                              {-1, 0},           {1, 0},
-                                              {-1, 1},  {0, 1},  {1, 1}};
+int CTorus::numOfNeighbours(int x, int y){
+    int a[8][2] = {{-1, -1}, {0, -1}, {1, -1},
+                 {-1, 0},           {1, 0},
+                 {-1, 1},  {0, 1},  {1, 1}};
     int res = 0;
-    for (auto pair: steps){
-        if ((isLiving(x + pair[0], y + pair[1])) == settled){
+    for (int i = 0; i < 8; ++i){
+        if ((isLiving(x + a[i][0], y + a[i][1])) == settled){
             res++;
         }
     }
     return res;
 }
 
-void CTorus::action(int act, int wasHere, long x, long y){
+void CTorus::action(int act, int wasHere, int x, int y){
     if (act == EXTERMINATE){
         torus[y * length + x] = empty;
     }else if (act == SETTLE){
@@ -105,7 +105,7 @@ void CTorus::action(int act, int wasHere, long x, long y){
     }
 }
 
-int CTorus::countCell( long x, long y){
+int CTorus::countCell( int x, int y){
     int numOfNeighb  = numOfNeighbours(x,y);
     if (numOfNeighb == 3 && (torus[y * length + x] == empty) ){
         return SETTLE;
@@ -116,11 +116,11 @@ int CTorus::countCell( long x, long y){
     }
 }
 
-void CTorus::set_nothing(long x, long y) {
+void CTorus::set_nothing(int x, int y) {
     torus[y * length + x] = notchanged;
 }
 
-int CTorus::getCell(long x, long y) {
+int CTorus::getCell(int x, int y) {
     return torus[y * length + x];
 }
 

@@ -18,33 +18,33 @@
 
 class CTorus {
 private:
-    long length;
-    long height;
+    int length;
+    int height;
 public:
 
     std::vector<int> torus;
 
-    CTorus(long len, long heig);
+    CTorus(int len, int heig);
 
-    long getHeight();
+    int getHeight();
 
-    long getLength();
+    int getLength();
 
-    int isLiving(long x, long y);
+    int isLiving(int x, int y);
 
-    int numOfNeighbours(long x, long y);
+    int numOfNeighbours(int x, int y);
 
-    void action(int act, int wasHere, long x, long y);
+    void action(int act, int wasHere, int x, int y);
 
-    int countCell( long x, long y);
+    int countCell( int x, int y);
 
     void print();
 
-    void set_nothing(long x, long y);
+    void set_nothing(int x, int y);
 
     void set(std::vector<int>& input);
 
-    int getCell(long x, long y);
+    int getCell(int x, int y);
 
     void setUpperBound(std::vector<int>& bound);
 
