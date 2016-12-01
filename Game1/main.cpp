@@ -2,6 +2,8 @@
 #include <thread>
 #include <fstream>
 #include "CGameBoard.h"
+#include <time.h>
+#include <stdlib.h>
 
 
 using namespace std;
@@ -57,7 +59,8 @@ void master(vector<int>& swamp, CGameBoard& board, size_t howLong, long workersS
 
 
 int main() {
-    std::ifstream F("/home/riv/concurrency/Game1/input.txt");
+    std::ifstream F("/home/riv/concurrency/Game1/input_rand.txt");
+    std::ofstream O("/home/riv/concurrency/Game1/output.txt");
 
     long kernels;
     long iterations;
@@ -68,15 +71,29 @@ int main() {
     std::vector<int> torus;
     std::string line;
 
+//    for (int i = 0; i < higth; ++i){
+//        F >> line;
+//        if (line.size() < length){
+//            throw new std::exception();
+//        }
+//        for (int j = 0; j < length; ++j){
+//            if (line[j] == '*'){
+//                torus.push_back(settled);
+//            } else if (line[j] == '-' ){
+//                torus.push_back(empty);
+//            } else{
+//                throw new std::exception();
+//            }
+//        }
+//    }
+
+    srand (time(NULL));
     for (int i = 0; i < higth; ++i){
-        F >> line;
-        if (line.size() < length){
-            throw new std::exception();
-        }
         for (int j = 0; j < length; ++j){
-            if (line[j] == '*'){
+            int node = rand()%2;
+            if (node == 0){
                 torus.push_back(settled);
-            } else if (line[j] == '-' ){
+            } else if (node == 1 ){
                 torus.push_back(empty);
             } else{
                 throw new std::exception();
@@ -95,6 +112,8 @@ int main() {
     long size = length * higth / (kernels-1);
     long rest = length * higth - size*(kernels-1);
 
+
+    time_t start = time(NULL);
     for (int i  = 0; i < kernels-1; ++i){
         if (i < rest){
             std::thread thr(worker,i, (size_t)((size+1)*i), std::ref(board), std::ref(swamp), iterations);
@@ -109,7 +128,7 @@ int main() {
     for (int i = 0; i < threads.size();++i){
         threads[i].join();
     }
-    board.printPrevTorus();
-
+    time_t end = time(NULL);
+    std::cout<<"Execution Time: "<< (double)(end-start)<<" Seconds"<<std::endl;
     return 0;
 }

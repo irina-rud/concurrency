@@ -61,8 +61,8 @@ void CTorus::setLowerBound(std::vector<int>& bound){
 }
 
 std::vector<int> CTorus::lowerBound(){
-    std::vector<int>::const_iterator first = torus.end() - length;
-    std::vector<int>::const_iterator last = torus.end() - 2*length;
+    std::vector<int>::const_iterator first = torus.end() - 2*length;
+    std::vector<int>::const_iterator last = torus.end() - length;
     std::vector<int> result(first, last);
     return result;
 }
