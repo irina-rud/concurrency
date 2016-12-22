@@ -50,10 +50,11 @@ public:
 
     void setLowerBound(std::vector<int>& bound);
 
-    std::vector<int> lowerBound();
 
-    std::vector<int> upperBound();
+    void upperBound(std::vector<int>& result);
 
-    std::vector<int> getTorus();
+    void lowerBound(std::vector<int>& result);
+
+    void getTorus(std::vector<int> &res);
 };
 

@@ -60,7 +60,7 @@ void CGameBoard::printTorus(){
 }
 
 CGameBoard::~CGameBoard(){
-    std::cout << "Have a nice day";
+    //std::cout << "Have a nice day";
 }
 
 bool CGameBoard::isCounted(int index) {
@@ -89,24 +89,26 @@ int CGameBoard::getNow() {
 
 
 void CGameBoard::setUpperBound(std::vector<int>& bound){
-    threeToruses[now].setUpperBound(bound);
+    threeToruses[(now + prev) % 3].setUpperBound(bound);
 }
 
 void CGameBoard::setLowerBound(std::vector<int>& bound){
-    threeToruses[now].setLowerBound(bound);
+    threeToruses[(now + prev) % 3].setLowerBound(bound);
 }
 
-std::vector<int> CGameBoard::lowerBound(){
-    threeToruses[now].lowerBound();
+void CGameBoard::lowerBound(std::vector<int> & result){
+    threeToruses[(now + prev) % 3].lowerBound(result);
 }
 
-std::vector<int> CGameBoard::upperBound(){
-    threeToruses[now].upperBound();
+void CGameBoard::upperBound(std::vector<int>& result){
+    threeToruses[(now +prev) %3].upperBound(result);
 }
 
-std::vector<int> CGameBoard::getTorus(){
-    return threeToruses[(now + prev) % 3].torus;
+void CGameBoard::getTorus(std::vector<int>& res){
+    threeToruses[(now +prev) %3].getTorus(res);
 }
+
+
 
 
 
